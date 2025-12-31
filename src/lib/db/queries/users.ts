@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "..";
 import { users } from "../schema";
-import { setUser } from "../../../config.js";
+import { setUser, readConfig } from "../../../config.js";
 
 export async function createUser(name: string) {
   const [result] = await db.insert(users).values({ name }).returning();
@@ -32,61 +32,40 @@ export async function registerUser(name: string) {
   return newUser;
 }
 
-// export async function registerUser(name: string) {
-//   console.log("registerUser called with:", name);
+export async function getUser(name: string) {
+  const [existing] = await db
+    .select()
+    .from(users)
+    .where(eq(users.name, name));
 
-//   try {
-//     const rows = await db.select().from(users);
-//     console.log("rows from users table:", rows);
-//   } catch (err) {
-//     console.error("DB error in registerUser:", err);
-//   }
+  if (!existing) {
+    throw new Error("User not registered");
+  } else {
+    return existing;
+  }
+}
 
-//   console.log("about to call setUser");
-//   setUser(name);
-//   console.log("setUser finished");
+export async function deleteUsers(): Promise<void> {
+  await db.delete(users);
+  console.log("All records deleted from the 'users' table.");
+}
 
-//   return;
-// }
-
-
-
-// import { setUser } from "../../../config.js";
-// import { db } from "..";
-// import { users } from "../schema";
-// import { eq } from "drizzle-orm";
-
-// export async function createUser(name: string) {
-//   const [result] = await db.insert(users).values({ name: name }).returning();
-//   return result;
-// }
-
-// export async function registerUser(name_: string) {
-//     console.log("registerUser called with:", name_);
-    
-//     if (!name_) {
-//         throw new Error("Name is required");
-//     }
-//     const [existing] = await db
-//     .select()
-//     .from(users)
-//     .where(eq(users.name, name_));
-
-//     console.log("existing user:", existing);
-
-//     if (existing) {
-//         throw new Error("User already registered")
-//     }
-//     const newUser = await createUser(name_)
-
-//     console.log("created user:", newUser);
-
-//     setUser(name_);
-
-//     console.log("setUser just called with:", name_);
-    
-//     console.log(`User "${name_}" was created: `);
-//     console.log(newUser);
-//     return newUser;
-// }
-
+export async function getUsers(): Promise<void> {
+  const name_array = await db
+    .select({field1: users.name})
+    .from(users);
+  if (name_array.length < 1) {
+    throw new Error("No users registered");
+  };
+  const current_user_name = readConfig().currentUserName;
+  const names: string[] = name_array.map(item => item.field1);
+  const names_marked: string[] = names.map(name => {
+  if (name === current_user_name) {
+    return `* ${name} (current)`; 
+}
+  return `* ${name}`;
+});
+  for (let i = 0; i < names_marked.length; i++) {
+    console.log(names_marked[i]);
+  }
+}
