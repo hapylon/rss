@@ -1,5 +1,5 @@
 import { XMLParser } from "fast-xml-parser";
-import { users, feeds } from "./db/schema";
+import { users, feeds, feed_follows } from "./db/schema";
 import { db } from "./db"
 import { eq } from "drizzle-orm";
 import { UUID } from "node:crypto";
@@ -22,6 +22,7 @@ export type RSSItem = {
 
 export type Feed = typeof feeds.$inferSelect;
 export type User = typeof users.$inferSelect;
+export type FeedFollows = typeof feed_follows.$inferSelect;
 
 export async function agg(url: string = "https://www.wagslane.dev/index.xml", ...args: string[]): Promise<void> {
     let result = await fetchFeed(url);
