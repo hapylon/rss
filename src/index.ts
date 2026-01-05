@@ -9,12 +9,13 @@ import {
   handlerGetUsers, 
 } from "./commands/users"
 import { handlerResetUsers } from "./commands/resetUsers"
-import { handlerAgg } from "./commands/agg"
+import { handlerAgg } from "./commands/aggregate"
 import { handlerAddFeed } from "./commands/addfeed"
 import { handlerArbitrary} from "./commands/arbitrary"
 import { handlerFeeds } from "./lib/db/queries/feedslist"
 import { handlerFollowing } from "./commands/following"
-import { handlerFollow } from "./commands/follow"
+import { handlerFollow, handlerUnFollow } from "./commands/follow"
+import { middlewareLoggedIn } from "./middleware"
 
 async function main() {
   const args = process.argv.slice(2); // Remove node and script path
@@ -33,11 +34,12 @@ async function main() {
   registerCommand(registry, "reset", handlerResetUsers);
   registerCommand(registry, "users", handlerGetUsers);
   registerCommand(registry, "agg", handlerAgg);
-  registerCommand(registry, "addfeed", handlerAddFeed);
+  registerCommand(registry, "addfeed", middlewareLoggedIn(handlerAddFeed));
   registerCommand(registry, "arbitrary", handlerArbitrary); 
   registerCommand(registry, "feeds", handlerFeeds);
-  registerCommand(registry, "following", handlerFollowing)
-  registerCommand(registry, "follow", handlerFollow)
+  registerCommand(registry, "following", middlewareLoggedIn(handlerFollowing));
+  registerCommand(registry, "follow", middlewareLoggedIn(handlerFollow));
+  registerCommand(registry, "unfollow", middlewareLoggedIn(handlerUnFollow));
 try {
   await runCommand(registry, cmdName, ...cmdArgs);
 } catch (error) {

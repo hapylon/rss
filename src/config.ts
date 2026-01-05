@@ -2,6 +2,10 @@
 import fs from "node:fs";
 import os from "os";
 import path from "path";
+import { db } from "./lib/db";
+import { users } from "./lib/db/schema";
+import { eq } from "drizzle-orm";
+import type { User } from "./lib/rss";
 
 export type Config = {
     dbUrl: string,
@@ -55,3 +59,16 @@ function writeConfig(cfg: Config): void {
   fs.writeFileSync(filepath, jsonString, "utf-8");
 }
 
+// export async function getUser(userName: string): Promise<User> {
+//   const [returnUser] = await db
+//     .select({
+//       id: users.id, 
+//       createdAt: users.createdAt,
+//       updatedAt: users.updatedAt,
+//       name: users.name
+//     })
+//     .from(users)
+//     .where(eq(users.name, userName)
+//   );
+//   return returnUser;
+// }

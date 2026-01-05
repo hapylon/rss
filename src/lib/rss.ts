@@ -1,8 +1,7 @@
 import { XMLParser } from "fast-xml-parser";
 import { users, feeds, feed_follows } from "./db/schema";
 import { db } from "./db"
-import { eq } from "drizzle-orm";
-import { UUID } from "node:crypto";
+
 
 export type RSSFeed = {
   channel: {
@@ -24,15 +23,9 @@ export type Feed = typeof feeds.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type FeedFollows = typeof feed_follows.$inferSelect;
 
-export async function agg(url: string = "https://www.wagslane.dev/index.xml", ...args: string[]): Promise<void> {
-    let result = await fetchFeed(url);
-    console.log(result);
-}
-
 export async function createFeed(
     feed_name: string, 
     feed_url: string, 
-    // current_name: string,
     user_uuid: string,
 ) {
     return {name: feed_name, url: feed_url, user_id: user_uuid} as Feed;
@@ -40,8 +33,6 @@ export async function createFeed(
 
 export async function addfeed(feed: Feed) {
     await db.insert(feeds).values(feed);
-    // const result = await db.insert(feeds).values(feed);
-    // return result;
 }
 
 export async function printFeed(feed: Feed, user: User) {
@@ -56,7 +47,6 @@ export async function printFeed(feed: Feed, user: User) {
 }
 
 export async function fetchFeed(feedURL: string) {
-    // const fetchRSSFeed = async (url) => {
     
     try {
         const customUserAgent = 'gator';
@@ -117,3 +107,9 @@ export async function fetchFeed(feedURL: string) {
         console.error("Error fetching or parsing RSS feed:", error);
     }
 }
+
+// export async function agg(url: string = "https://www.wagslane.dev/index.xml", ...args: string[]): Promise<void> {
+//     let result = await fetchFeed(url);
+//     console.log(result);
+// }
+
