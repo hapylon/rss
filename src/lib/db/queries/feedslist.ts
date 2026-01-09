@@ -72,6 +72,10 @@ export async function urlToName(url: string) {
     .select({ value: feeds.name })
     .from(feeds)
     .where(eq(feeds.url, url));
+    console.log("urlToName input:", url, "parsed:", urlName);
+    if (!urlName) {
+        return url;
+    }
     return urlName.value;
 }
 
