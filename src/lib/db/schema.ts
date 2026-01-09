@@ -36,7 +36,7 @@ export const posts = pgTable("posts", {
     title: text("title"),
     url: text("url").notNull().unique(),
     description: text("description"),
-    publishedAt: text("published_at").notNull(),
+    publishedAt: timestamp("published_at", { mode: "date" }),
     feed_id: uuid("feed_id").notNull(),
 });
 

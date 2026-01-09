@@ -75,6 +75,14 @@ export async function urlToName(url: string) {
     return urlName.value;
 }
 
+export async function feedIdToName(feed_id: typeof feeds.$inferSelect.id) {
+    const [feedName] = await db
+    .select({ value: feeds.name })
+    .from(feeds)
+    .where(eq(feeds.id, feed_id));
+    return feedName.value;
+}
+
 export async function urlToFeedId(url: string) {
     const [feedId] = await db
     .select({ value: feeds.id })

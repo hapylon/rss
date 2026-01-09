@@ -1,6 +1,7 @@
 import { fetchFeed } from "src/lib/rss";
 import { getNextFeedToFetch } from "./getNextFeedToFetch";
 import { markFeedFetched } from "./markfetchedfeed";
+import { createPost } from "src/commands/createpost";
 
 export async function scrapeFeeds(): Promise<void> {
     const nextFeed = await getNextFeedToFetch();
@@ -10,6 +11,14 @@ export async function scrapeFeeds(): Promise<void> {
         throw new Error("problem fetching in scrapeFeeds()");
     }
     for (let i = 0; i < fetched.channel.item.length; i++) {
-        console.log(fetched.channel.item[i].title);
+        // console.log(fetched.channel.item[i].title);
+        createPost(
+            fetched.channel.item[i].title,
+            fetched.channel.item[i].link,
+            fetched.channel.item[i].description,
+            fetched.channel.item[i].pubDate,
+            nextFeed.id
+        );
+        console.log(`${fetched.channel.item[i].title} saved to the database!`)
     }
 }

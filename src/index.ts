@@ -16,6 +16,7 @@ import { handlerFeeds } from "./lib/db/queries/feedslist"
 import { handlerFollowing } from "./commands/following"
 import { handlerFollow, handlerUnFollow } from "./commands/follow"
 import { middlewareLoggedIn } from "./middleware"
+import { handlerBrowse } from "./commands/browse"
 
 async function main() {
   const args = process.argv.slice(2); // Remove node and script path
@@ -40,6 +41,7 @@ async function main() {
   registerCommand(registry, "following", middlewareLoggedIn(handlerFollowing));
   registerCommand(registry, "follow", middlewareLoggedIn(handlerFollow));
   registerCommand(registry, "unfollow", middlewareLoggedIn(handlerUnFollow));
+  registerCommand(registry, "browse", middlewareLoggedIn(handlerBrowse));
 try {
   await runCommand(registry, cmdName, ...cmdArgs);
 } catch (error) {
